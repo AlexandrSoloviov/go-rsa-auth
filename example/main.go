@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/AlexandrSoloviov/go-rsa-auth/example/econtroller"
+	"github.com/AlexandrSoloviov/go-rsa-auth/gorest"
 	"github.com/AlexandrSoloviov/go-rsa-auth/gorsaauth"
 )
 
@@ -40,11 +42,14 @@ func main() {
 	} else {
 		log.Println("SIGN VERIFY OK")
 	}
-	token := private.NewToken("SM-RG-01")
+
+	token := private.NewToken("SM-RG-01-LLLLLLLLL")
 	signedToken, err := token.Sign(private)
 	if err != nil {
 		log.Fatal("cant`t sign token", err)
 	}
+
+	// signedToken[10] = 1
 	strSignedToken := fmt.Sprintf("%0+x", signedToken)
 	log.Println("GENERATED TOKEN:", strSignedToken)
 
@@ -59,6 +64,16 @@ func main() {
 	} else {
 		log.Println("TEST TOKEN:", token.Id(), token.ExpiredAt())
 	}
+	service := gorest.New(33333)
 
+	service.SetTimeout(10)
+
+	c := econtroller.NewController(service.Sessions)
+	c.SetKey(public)
+	c.SetErrorMessage("OKNOT")
+
+	service.Handle("/auth", c.Auth)
+	service.AuthHandle("/work", c.Work)
+	service.Run()
 	// gorsaauth.NewPrivateKey()
 }
