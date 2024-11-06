@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/rand"
-	"encoding/hex"
+	"fmt"
 	"log"
 
 	"github.com/AlexandrSoloviov/go-rsa-auth/gorsaauth"
@@ -45,16 +45,19 @@ func main() {
 	if err != nil {
 		log.Fatal("cant`t sign token", err)
 	}
-	log.Printf("TOKEN:%0x", signedToken)
+	strSignedToken := fmt.Sprintf("%0+x", signedToken)
+	log.Println("GENERATED TOKEN:", strSignedToken)
 
-	if btt, err := hex.DecodeString(testToken); err != nil {
-		log.Fatal("BAD HEX", err)
+	if token, err := public.AuthHex(strSignedToken); err != nil {
+		log.Fatal("GENERATED TOKEN AUTH FAIL", err)
 	} else {
-		st, err := public.Auth(btt)
-		if err != nil {
-			log.Fatal("BAD TEST TOKEN", err)
-		}
-		log.Println("TOKEN:", st.Id(), st.ExpiredAt())
+		log.Println("GENERATED TOKEN:", token.Id(), token.ExpiredAt())
+	}
+
+	if token, err := public.AuthHex(testToken); err != nil {
+		log.Fatal("TEST TOKEN AUTH FAIL", err)
+	} else {
+		log.Println("TEST TOKEN:", token.Id(), token.ExpiredAt())
 	}
 
 	// gorsaauth.NewPrivateKey()
