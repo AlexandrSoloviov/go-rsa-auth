@@ -34,10 +34,10 @@ func (rk PrivateKey) Sign(data []byte) ([]byte, error) {
 	return sign, nil
 }
 
-func (rk PrivateKey) NewToken(ID string) token {
+func (rk PrivateKey) NewToken(ID string, days int) token {
 	smt := make([]byte, 0, rk.len*2)
 	rnd := make([]byte, rk.len-8-8)
-	experationTime := time.Now().Add(time.Hour * 24 * 60)
+	experationTime := time.Now().Add(time.Hour * time.Duration(24*days))
 	now := uint64(experationTime.UnixNano())
 	nowBytes := make([]byte, 8)
 	rand.Read(rnd)

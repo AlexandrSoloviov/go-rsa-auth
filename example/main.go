@@ -43,7 +43,7 @@ func main() {
 		log.Println("SIGN VERIFY OK")
 	}
 
-	token := private.NewToken("SM-RG-01-LLLLLLLLL")
+	token := private.NewToken("SM-RG-01-LLLLLLLLL", 1)
 	signedToken, err := token.Sign(private)
 	if err != nil {
 		log.Fatal("cant`t sign token", err)
@@ -66,7 +66,7 @@ func main() {
 	}
 	service := gorest.New(33333)
 
-	service.SetTimeout(10)
+	service.SetTimeout(20)
 
 	c := econtroller.NewController(service.Sessions)
 	c.SetKey(public)
